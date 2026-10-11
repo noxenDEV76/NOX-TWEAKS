@@ -1,51 +1,41 @@
-name: Build NOX TWEAK (Windows)
+nname: Build NOX TWEAK (Windows)
 
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-  workflow_dispatch:
+push:
+branches: [main, master]
+pull_request:
+workflow_dispatch:
+
+permissions:
+contents: read
 
 jobs:
-  build:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
+build:
+runs-on: windows-2022
 
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
+steps:
+  - uses: actions/checkout@v4
 
-      - name: Restore
-        run: dotnet restore NoxTweak.sln
+  - name: Setup .NET
+    uses: actions/setup-dotnet@v4
+    with:
+      dotnet-version: '8.0.x'
 
-      - name: Build (Release)
-        run: dotnet build NoxTweak.sln -c Release --no-restore
+  - name: Restore
+    run: dotnet restore NoxTweak.sln
 
-      - name: Self-tests
-        shell: pwsh
-        continue-on-error: true
-        run: |
-          $out = dotnet run --project src/NoxTweak.SelfTest -c Release --no-build 2>&1 | Out-String
-          Write-Host $out
-          $lines = $out -split "`r?`n"
-          for ($i = 0; $i -lt $lines.Length; $i++) {
-            if ($lines[$i] -match '^\s+FAIL\s+(.*)$') {
-              $detail = if ($i + 1 -lt $lines.Length) { $lines[$i + 1].Trim() } else { '' }
-              Write-Host "::error title=Self-test failed::$($Matches[1]) -- $detail"
-            }
-          }
-          if ($LASTEXITCODE -ne 0) { exit 1 }
+  - name: Build (Release)
+    run: dotnet build NoxTweak.sln -c Release --no-restore
 
-      - name: Publish self-contained win-x64
-        run: >
-          dotnet publish src/NoxTweak.App/NoxTweak.App.csproj -c Release -r win-x64
-          --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
-          -o publish
+  - name: Self-tests
+    run: dotnet run --project src/NoxTweak.SelfTest -c Release --no-build
 
-      - name: Upload EXE
-        uses: actions/upload-artifact@v4
-        with:
-          name: NoxTweak-win-x64
-          path: publish/NoxTweak.exe
-          if-no-files-found: error
+  - name: Publish self-contained win-x64
+    run: dotnet publish src/NoxTweak.App/NoxTweak.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
+
+  - name: Upload EXE
+    uses: actions/upload-artifact@v4
+    with:
+      name: NoxTweak-win-x64
+      path: publish/NoxTweak.exe
+      if-no-files-found: error
