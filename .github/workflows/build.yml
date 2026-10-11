@@ -23,7 +23,19 @@ jobs:
         run: dotnet build NoxTweak.sln -c Release --no-restore
 
       - name: Self-tests
-        run: dotnet run --project src/NoxTweak.SelfTest -c Release --no-build
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          $out = dotnet run --project src/NoxTweak.SelfTest -c Release --no-build 2>&1 | Out-String
+          Write-Host $out
+          $lines = $out -split "`r?`n"
+          for ($i = 0; $i -lt $lines.Length; $i++) {
+            if ($lines[$i] -match '^\s+FAIL\s+(.*)$') {
+              $detail = if ($i + 1 -lt $lines.Length) { $lines[$i + 1].Trim() } else { '' }
+              Write-Host "::error title=Self-test failed::$($Matches[1]) -- $detail"
+            }
+          }
+          if ($LASTEXITCODE -ne 0) { exit 1 }
 
       - name: Publish self-contained win-x64
         run: >
