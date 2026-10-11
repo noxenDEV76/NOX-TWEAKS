@@ -1,0 +1,234 @@
+<UserControl x:Class="NoxTweak.App.Views.GameModeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="clr-namespace:NoxTweak.App.Controls"
+             Style="{StaticResource PageStyle}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="32,40,32,32">
+            <TextBlock Text="{Binding Title}" Style="{StaticResource PageTitle}"/>
+            <TextBlock Text="{Binding Subtitle}" Style="{StaticResource Muted}" FontSize="14" Margin="0,4,0,18"/>
+
+            <!-- Main panel: ring + settings rows -->
+            <Border Style="{StaticResource CardBorder}" Padding="28">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="1.3*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <c:SwitchButton Style="{StaticResource RingStyle}" Content="{Binding RingText}" IsOn="{Binding IsActive}"
+                                        Command="{Binding ToggleActiveCommand}" AutomationProperties.Name="Activate or deactivate Game Mode"/>
+                        <TextBlock Text="{Binding RingHint}" Style="{StaticResource Muted}" TextWrapping="Wrap" TextAlignment="Center" MaxWidth="300" FontSize="12.5" Margin="0,12,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="24,0,0,0">
+                        <!-- Detected game -->
+                        <Grid Margin="0,0,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Icon}" Text="&#xE7FC;" Margin="0,0,10,0"/>
+                                <TextBlock Text="Detected Game" Style="{StaticResource Muted}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Border Width="30" Height="30" CornerRadius="7" Background="{StaticResource AccentGradient}" Margin="0,0,10,0">
+                                    <TextBlock Text="{Binding DetectedGameInitials}" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding DetectedGame}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" MaxWidth="220"/>
+                                    <TextBlock Text="{Binding DetectedGameLauncher}" Style="{StaticResource Muted}" FontSize="11"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Preset -->
+                        <Grid Margin="0,0,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Icon}" Text="&#xE713;" Margin="0,0,10,0"/>
+                                <TextBlock Text="Current Preset" Style="{StaticResource Muted}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <ItemsControl Grid.Column="1" ItemsSource="{Binding Presets}" Focusable="False">
+                                <ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <c:SwitchButton Style="{StaticResource ChipStyle}" Content="{Binding Name}" IsOn="{Binding IsOn}" Command="{Binding SelectCommand}" ToolTip="{Binding Description}"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+
+                        <!-- Automatic mode -->
+                        <Grid Margin="0,0,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Icon}" Text="&#xE916;" Margin="0,0,10,0"/>
+                                <TextBlock Text="Automatic Mode" Style="{StaticResource Muted}" VerticalAlignment="Center"/>
+                                <TextBlock Style="{StaticResource Icon}" Text="&#xE946;" FontSize="13" Margin="10,0,0,0" ToolTip="{Binding AutomaticHint}" Focusable="True"/>
+                            </StackPanel>
+                            <c:SwitchButton Grid.Column="1" Style="{StaticResource SwitchStyle}" IsOn="{Binding AutomaticMode}" Command="{Binding ToggleAutomaticCommand}"
+                                            AutomationProperties.Name="Automatic Mode"/>
+                        </Grid>
+
+                        <!-- Add games -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Icon}" Text="&#xE8FD;" Margin="0,0,10,0"/>
+                                <TextBlock Text="Add games" Style="{StaticResource Muted}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Style="{StaticResource GhostButton}" Content="Games library" Command="{Binding OpenGamesCommand}" Margin="0,0,8,0"/>
+                                <Button Style="{StaticResource GhostButton}" Content="+  Add games" Command="{Binding AddGamesCommand}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Border Background="#0F1119" CornerRadius="8" Padding="12,9" Margin="0,22,0,0">
+                            <TextBlock Text="{Binding SessionLine}" Style="{StaticResource Muted}" TextWrapping="Wrap" FontSize="12.5"/>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Configure -->
+            <Grid Margin="0,22,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Configure NOX Game Mode" Style="{StaticResource SectionTitle}"/>
+                    <TextBlock Text="Customize individual elements of Game Mode to create your personalized setup." Style="{StaticResource Muted}" Margin="0,4,0,0"/>
+                </StackPanel>
+                <Button Grid.Column="1" Style="{StaticResource PrimaryButton}" Content="{Binding ConfigureLabel}" Command="{Binding ConfigureCommand}" Padding="26,10" VerticalAlignment="Center"/>
+            </Grid>
+
+            <!-- Feature tiles -->
+            <UniformGrid Columns="4" Margin="0,18,0,0">
+                <StackPanel Margin="0,0,16,0">
+                    <StackPanel Orientation="Horizontal"><TextBlock Style="{StaticResource Icon}" Text="&#xE74D;" Foreground="{StaticResource DangerBrush}" FontSize="14" Margin="0,0,8,0"/><TextBlock Text="Process Cleaner" FontWeight="SemiBold" FontSize="13"/></StackPanel>
+                    <TextBlock Text="Closes only the background apps you choose, politely, when a game starts." Style="{StaticResource Muted}" TextWrapping="Wrap" FontSize="12" Margin="0,6,0,0"/>
+                </StackPanel>
+                <StackPanel Margin="0,0,16,0">
+                    <StackPanel Orientation="Horizontal"><TextBlock Style="{StaticResource Icon}" Text="&#xE945;" Foreground="{StaticResource WarnBrush}" FontSize="14" Margin="0,0,8,0"/><TextBlock Text="General System Optimization" FontWeight="SemiBold" FontSize="13"/></StackPanel>
+                    <TextBlock Text="Windows Game Mode, Game DVR, notifications and power plan for the session." Style="{StaticResource Muted}" TextWrapping="Wrap" FontSize="12" Margin="0,6,0,0"/>
+                </StackPanel>
+                <StackPanel Margin="0,0,16,0">
+                    <StackPanel Orientation="Horizontal"><TextBlock Style="{StaticResource Icon}" Text="&#xE7FC;" Foreground="{StaticResource SuccessBrush}" FontSize="14" Margin="0,0,8,0"/><TextBlock Text="Optimize Games" FontWeight="SemiBold" FontSize="13"/></StackPanel>
+                    <TextBlock Text="Launches your game and optionally raises its priority. No game files are touched." Style="{StaticResource Muted}" TextWrapping="Wrap" FontSize="12" Margin="0,6,0,0"/>
+                </StackPanel>
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal"><TextBlock Style="{StaticResource Icon}" Text="&#xE777;" Foreground="{StaticResource VioletBrush}" FontSize="14" Margin="0,0,8,0"/><TextBlock Text="Automatic Restore" FontWeight="SemiBold" FontSize="13"/></StackPanel>
+                    <TextBlock Text="Every change is backed up and undone when the game closes, even after a crash." Style="{StaticResource Muted}" TextWrapping="Wrap" FontSize="12" Margin="0,6,0,0"/>
+                </StackPanel>
+            </UniformGrid>
+
+            <!-- Configuration panel -->
+            <StackPanel Margin="0,22,0,0" Visibility="{Binding IsConfiguring, Converter={StaticResource BoolToVis}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Style="{StaticResource CardBorder}" Margin="0,0,8,0">
+                        <StackPanel>
+                            <TextBlock Text="Presets" FontWeight="SemiBold" FontSize="16"/>
+                            <ItemsControl ItemsSource="{Binding Presets}" Margin="0,10,0,0" Focusable="False">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <c:SwitchButton Style="{StaticResource RadioRowStyle}" IsOn="{Binding IsOn}" Command="{Binding SelectCommand}" Margin="0,0,0,4"
+                                                        AutomationProperties.Name="{Binding Name}">
+                                            <StackPanel>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Foreground="{StaticResource TextBrush}"/>
+                                                    <TextBlock Text="{Binding CountText}" Style="{StaticResource Muted}" FontSize="12" Margin="10,2,0,0"/>
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding Description}" Style="{StaticResource Muted}" FontSize="12" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                        </c:SwitchButton>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <TextBlock Text="Actions (used by the Custom preset)" FontWeight="SemiBold" FontSize="14" Margin="0,16,0,6"/>
+                            <ItemsControl ItemsSource="{Binding ActionRows}" Focusable="False">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Margin="0,0,12,0">
+                                                <TextBlock Text="{Binding Title}" FontSize="13"/>
+                                                <TextBlock Text="{Binding Detail}" Style="{StaticResource Muted}" FontSize="11.5" TextWrapping="Wrap"/>
+                                            </StackPanel>
+                                            <c:SwitchButton Grid.Column="1" Style="{StaticResource SwitchStyle}" IsOn="{Binding IsOn}" Command="{Binding ToggleCommand}" AutomationProperties.Name="{Binding Title}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Style="{StaticResource CardBorder}" Margin="8,0,0,0">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Process Cleaner: apps to close" FontWeight="SemiBold" FontSize="16"/>
+                                <Button Grid.Column="1" Style="{StaticResource GhostButton}" Content="Refresh" Command="{Binding RefreshAppsCommand}" Padding="12,4"/>
+                            </Grid>
+                            <TextBlock Text="Only apps you switch on are asked to close when a game starts. System components, security software, launchers and anti-cheat can never be closed." Style="{StaticResource Muted}" TextWrapping="Wrap" FontSize="12" Margin="0,6,0,10"/>
+                            <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                <ItemsControl ItemsSource="{Binding AppRows}" Focusable="False">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,0,10,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Margin="0,0,12,0">
+                                                    <TextBlock Text="{Binding Title}" FontSize="13" TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{Binding Detail}" Style="{StaticResource Muted}" FontSize="11.5" TextTrimming="CharacterEllipsis"/>
+                                                </StackPanel>
+                                                <c:SwitchButton Grid.Column="1" Style="{StaticResource SwitchStyle}" IsOn="{Binding IsOn}" Command="{Binding ToggleCommand}" AutomationProperties.Name="{Binding Title}"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <Grid Margin="0,14,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,12,0">
+                                    <TextBlock Text="Force close stubborn apps" FontSize="13"/>
+                                    <TextBlock Text="{Binding ForceHint}" Style="{StaticResource Muted}" FontSize="11.5" TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <c:SwitchButton Grid.Column="1" Style="{StaticResource SwitchStyle}" IsOn="{Binding ForceClose}" Command="{Binding ToggleForceCommand}" AutomationProperties.Name="Force close stubborn apps"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
